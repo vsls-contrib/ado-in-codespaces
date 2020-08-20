@@ -10,7 +10,7 @@
 		// [change] ADO repo URL
 		"ADO_REPO_URL": "https://devdiv.visualstudio.com/DefaultCollection/OnlineServices/_git/ado-in-codespaces-test",
 		// [change] relative to the ADO repo root
-		"ADO_REPO_DEFAULT_PATH": "/",
+		"ADO_REPO_DEFAULT_PATH": "",
 	},
 	/*
 	 * Please don't change! create your own `post-create-command.sh`
