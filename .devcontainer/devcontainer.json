@@ -1,0 +1,19 @@
+
+{
+	"$schema": "https://raw.githubusercontent.com/microsoft/vscode/master/extensions/configuration-editing/schemas/devContainer.schema.json",
+	"name": "ADO in GitHub Codespaces",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [],
+	"remoteEnv": {
+		"ADO_REPO_URL": "https://devdiv.visualstudio.com/DefaultCollection/OnlineServices/_git/ado-in-codespaces-test",
+		"ADO_REPO_DEFAULT_PATH": "/apps/node-app",
+	},
+	/*
+	 * Please don't change! create your own `post-create-command.sh`
+	 * file in this folder instead, it will be called automatically
+	 * once the Codespace is fully set up.
+	 */
+	"postCreateCommand": "/bin/sh .codespaces/post-create.sh"
+}

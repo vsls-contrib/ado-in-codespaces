@@ -1,3 +1,11 @@
+The Generalized version:
+
+- how user specifies the image?
+- how do we store the input info to make it repeatable
+- general feed authentication
+
+---
+
 - add the `--pristine` option that will reset to the GitHub main branch
 - VSCode UI shows too many git updates/changes
 - improve docs on local DNS setup

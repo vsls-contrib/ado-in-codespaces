@@ -2,7 +2,20 @@
 
 clear
 
-source ~/.bashrc
+cp -Ru . ~/ado-in-codespaces
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+CACHE_FILE_PATH=~/.ado-in-codespaces-cache
+
+if [ -f $CACHE_FILE_PATH ]; then
+    source $CACHE_FILE_PATH
+fi
+
+if [ -f ~/.bashrc ]; then
+    source ~/.bashrc
+fi
+
+source "$SCRIPT_DIR/lib/colors.sh"
 
 if [ -f ~/.cs-envirnment ]; then
     source ~/.cs-envirnment
@@ -32,6 +45,51 @@ sleep 1s
 echo -e $PALETTE_PURPLE"\n🏃 Lets setup the Codespace"$PALETTE_RESET
 
 sleep 0.25s
+
+
+
+
+
+
+
+
+if [ -z "$ADO_REPO_URL" ]; then
+
+    unset ADO_REPO_URL_SUFFIX;
+    if [ -z "$ADO_REPO_URL" ]; then
+        ADO_REPO_URL_SUFFIX=""
+    else
+        ADO_REPO_URL_SUFFIX=$PALETTE_CYAN"(➥ to reuse *$ADO_REPO_URL*)"$PALETTE_RESET
+    fi
+
+    echo -e $PALETTE_CYAN"\n- Please provide your AzDO repo URL\n"$PALETTE_RESET
+
+    printf " ↳ AzDO repo URL$ADO_REPO_URL_SUFFIX: $PALETTE_PURPLE"
+
+    read ADO_REPO_URL_INPUT
+
+    echo -e " $PALETTE_RESET"
+
+    if [ -z "$ADO_REPO_URL_INPUT" ]; then
+        if [ -z "$ADO_REPO_URL" ]; then
+            echo -e $PALETTE_RED"  🧱 No link - no {tbd}"$PALETTE_RESET
+            exit 1
+        else
+            ADO_REPO_URL_INPUT=$ADO_REPO_URL
+            echo -e $PALETTE_DIM"  * reusing *$ADO_REPO_URL_INPUT* as AzDO repo URL.\n"$PALETTE_RESET
+        fi
+    fi
+
+    if [ "$ADO_REPO_URL" != "$ADO_REPO_URL_INPUT" ]; then
+        export ADO_REPO_URL=$ADO_REPO_URL_INPUT
+
+        echo "export ADO_REPO_URL=$ADO_REPO_URL" >> $CACHE_FILE_PATH
+    fi
+
+fi
+
+
+
 
 unset AZ_DO_USERNAME_SUFFIX;
 if [ -z "$AZ_DO_USERNAME" ]; then
@@ -67,8 +125,15 @@ fi
 if [ "$AZ_DO_USERNAME" != "$AZ_DO_USERNAME_INPUT" ]; then
     export AZ_DO_USERNAME=$AZ_DO_USERNAME_INPUT
 
-    echo "export AZ_DO_USERNAME=$AZ_DO_USERNAME" >> ~/.bashrc
+    echo "export AZ_DO_USERNAME=$AZ_DO_USERNAME" >> $CACHE_FILE_PATH
 fi
+
+
+
+
+
+
+
 
 echo -e $PALETTE_CYAN"- Thanks, *$AZ_DO_USERNAME*! Please provide your AzDO PAT\n"$PALETTE_RESET
 
@@ -82,7 +147,7 @@ fi
 # reading the PAT
 unset CHARCOUNT
 unset AZ_DO_PAT_INPUT
-PROMPT=" ↳ PAT code[R/W] + packaging[R]$AZ_DO_PASSWORD_SUFFIX: $PALETTE_PURPLE"
+PROMPT=" ↳ PAT code[R/W] + packaging[R]$AZ_DO_PASSWORD_SUFFIX: "
 
 stty -echo
 
@@ -124,8 +189,16 @@ if [ -z ${AZ_DO_PAT_INPUT} ]; then
     fi
 fi
 
-git remote remove azdo
-git remote add azdo https://$AZ_DO_USERNAME:$AZ_DO_PAT_INPUT@devdiv.visualstudio.com/OnlineServices/_git/vsclk-core
+EMPTY_STRING=""
+CLEAN_ADO_ORIGIN="${ADO_REPO_URL/https\:\/\//$EMPTY_STRING}"
+
+git remote remove github-origin &>/dev/null
+git remote rename origin github-origin &>/dev/null
+
+#git remote remove origin
+git remote add origin https://$AZ_DO_USERNAME:$AZ_DO_PAT_INPUT@$CLEAN_ADO_ORIGIN
+
+GIT_DEFAULT_BRANCH_NAME=$(git remote show origin | grep "HEAD branch\: " | sed 's/HEAD branch\: //g' | xargs)
 
 echo -e $PALETTE_LIGHT_YELLOW"\n ⌬ Fetching the repo\n"$PALETTE_RESET
 
@@ -135,7 +208,9 @@ git checkout main
 git branch --track github-main
 
 # clone the AzDO repo
-git pull azdo master:main --force --no-tags
+git pull origin $GIT_DEFAULT_BRANCH_NAME:$GIT_DEFAULT_BRANCH_NAME --force --no-tags
+
+git checkout $GIT_DEFAULT_BRANCH_NAME &>/dev/null
 
 if [ "$AZ_DO_PAT" != "$AZ_DO_PAT_INPUT" ]; then
     export AZ_DO_PAT=$AZ_DO_PAT_INPUT
@@ -146,25 +221,19 @@ if [ "$AZ_DO_PAT" != "$AZ_DO_PAT_INPUT" ]; then
     echo -e "export AZ_DO_PAT=$AZ_DO_PAT" >> ~/.cs-envirnment
 fi
 
-if [ ! -d $CSCLIENT ]; then
-    echo -e $PALETTE_RED"\n ❗ Could not clone the \`vsclk-core\` repo, are the credentials correct?\n"$PALETTE_RESET
+if [ ! -d $CODESPACE_DEFAULT_PATH ]; then
+    echo -e $PALETTE_RED"\n ❗ Could not clone the \`$ADO_REPO_URL\` repo, are the credentials correct?\n"$PALETTE_RESET
     exit 1
 fi
 
-# setup NuGet feeds
-FEED_NAME="vssaas-sdk"
-dotnet nuget remove source $FEED_NAME
-dotnet nuget add source "https://devdiv.pkgs.visualstudio.com/_packaging/vssaas-sdk/nuget/v3/index.json" -n $FEED_NAME -u "devdiv" -p "$AZ_DO_PAT" --store-password-in-clear-text
+cd $CODESPACE_DEFAULT_PATH
 
-FEED_NAME="Cascade"
-dotnet nuget remove source $FEED_NAME
-dotnet nuget add source "https://devdiv.pkgs.visualstudio.com/_packaging/Cascade/nuget/v3/index.json" -n $FEED_NAME -u "devdiv" -p "$AZ_DO_PAT" --store-password-in-clear-text
+USER_POST_CREATE_COMMAND_FILE=~/ado-in-codespaces/.devcontainer/post-create-command.sh
+if [ -f $USER_POST_CREATE_COMMAND_FILE ]; then
+    echo -e $PALETTE_CYAN"\n Executing the post create command..\n"$PALETTE_RESET
 
-# go to `Website`
-cd $CSCLIENT
-# initialize the codespace
-yarn setup:codespace
-# go to `Website`
-cd $CSCLIENT
+    . $USER_POST_CREATE_COMMAND_FILE
+fi
 
 exec bash
+

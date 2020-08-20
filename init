@@ -1,0 +1,3 @@
+#!/bin/bash
+
+source .codespaces/init-ado-repo.sh
