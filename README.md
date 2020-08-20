@@ -6,7 +6,7 @@ Bootstrap script to run Azure DevOps repo in a GitHub Codespace.
 
 ### Use
 
-TBD
+Search for the `[change]` labels in this repo.
 
 ### Issues/Feedback
 
