@@ -2,13 +2,17 @@
 
 [<img title="Run in Codespace in one click" src="https://cdn.jsdelivr.net/gh/bookish-potato/codespaces-in-codespaces@f097ccddfc401ab6b09d233dc47c3efa3f9513f6/images/badge.svg">](https://github.com/features/codespaces)
 
-Bootstrap script to run Azure DevOps repo in a GitHub Codespace.
+Script to create GitHub Codespace out of Azure DevOps repo.
 
 ### Use
 
-Search for the `[change]` labels in this repo.
+1. Create a repo from this template, change the environment variables in the `devcontainer.json`:
+ - `$ADO_REPO_URL` - ADO repo URL to create the codespace with
+ - `$ADO_REPO_DEFAULT_PATH` - the default workspace folder for the Codespace (analog of `workspaceFolder` from devcontainer spec)
+ - feel free to define any other settings inside the file
+2. Create a Codespace and run `./init` in the terminal.
+3. Follow interactive script to specify your ADO `username` and `PAT`.
 
 ### Issues/Feedback
 
 - Feedback appreciated, create issues on this repo if anything 🤗
-- Ping [@legomushroom](https://github.com/legomushroom) if cannot get desired support in the GitHub issues (`olsolomk` if inside Microsoft) 🏓
