@@ -1,4 +1,3 @@
-
 {
 	"$schema": "https://raw.githubusercontent.com/microsoft/vscode/master/extensions/configuration-editing/schemas/devContainer.schema.json",
 	"name": "ADO in GitHub Codespaces",
@@ -8,9 +7,9 @@
 	"extensions": [],
 	"remoteEnv": {
 		// [change] ADO repo URL
-		"ADO_REPO_URL": "https://devdiv.visualstudio.com/DefaultCollection/OnlineServices/_git/ado-in-codespaces-test",
+		"ADO_REPO_URL": "",
 		// [change] relative to the ADO repo root
-		"ADO_REPO_DEFAULT_PATH": "/apps/node-app",
+		"ADO_REPO_DEFAULT_PATH": "",
 	},
 	/*
 	 * Please don't change! create your own `post-create-command.sh`
