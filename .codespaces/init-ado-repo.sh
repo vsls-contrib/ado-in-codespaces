@@ -222,10 +222,9 @@ if [ "$ADO_PAT" != "$ADO_PAT_INPUT" ]; then
 fi
 
 if [ ! -d $CODESPACE_DEFAULT_PATH ]; then
-    echo -e $PALETTE_RED"\n ❗ Could not clone the \`$ADO_REPO_URL\` repo, are the credentials correct?\n"$PALETTE_RESET
+    echo -e $PALETTE_RED"\n ❗ Cannot find the \`$CODESPACE_DEFAULT_PATH\` path, failed clone the repo or the $ADO_REPO_DEFAULT_PATH not correct?\n"$PALETTE_RESET
     exit 1
 fi
-
 
 mkdir -p ~/.nuget/NuGet/
 
