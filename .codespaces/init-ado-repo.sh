@@ -62,9 +62,9 @@ if [ -z "$ADO_REPO_URL" ]; then
         ADO_REPO_URL_SUFFIX=$PALETTE_CYAN"(➥ to reuse *$ADO_REPO_URL*)"$PALETTE_RESET
     fi
 
-    echo -e $PALETTE_CYAN"\n- Please provide your AzDO repo URL\n"$PALETTE_RESET
+    echo -e $PALETTE_CYAN"\n- Please provide your ADO repo URL\n"$PALETTE_RESET
 
-    printf " ↳ AzDO repo URL$ADO_REPO_URL_SUFFIX: $PALETTE_PURPLE"
+    printf " ↳ ADO repo URL$ADO_REPO_URL_SUFFIX: $PALETTE_PURPLE"
 
     read ADO_REPO_URL_INPUT
 
@@ -76,7 +76,7 @@ if [ -z "$ADO_REPO_URL" ]; then
             exit 1
         else
             ADO_REPO_URL_INPUT=$ADO_REPO_URL
-            echo -e $PALETTE_DIM"  * reusing *$ADO_REPO_URL_INPUT* as AzDO repo URL.\n"$PALETTE_RESET
+            echo -e $PALETTE_DIM"  * reusing *$ADO_REPO_URL_INPUT* as ADO repo URL.\n"$PALETTE_RESET
         fi
     fi
 
@@ -98,9 +98,9 @@ else
     AZ_DO_USERNAME_SUFFIX=$PALETTE_CYAN"(➥ to reuse *$AZ_DO_USERNAME*)"$PALETTE_RESET
 fi
 
-echo -e $PALETTE_CYAN"\n- Please provide your AzDO username\n"$PALETTE_RESET
+echo -e $PALETTE_CYAN"\n- Please provide your ADO username\n"$PALETTE_RESET
 
-printf " ↳ AzDO Username$AZ_DO_USERNAME_SUFFIX: $PALETTE_PURPLE"
+printf " ↳ ADO Username$AZ_DO_USERNAME_SUFFIX: $PALETTE_PURPLE"
 
 read AZ_DO_USERNAME_INPUT
 
@@ -112,14 +112,14 @@ if [ -z "$AZ_DO_USERNAME_INPUT" ]; then
         exit 1
     else
         AZ_DO_USERNAME_INPUT=$AZ_DO_USERNAME
-        echo -e $PALETTE_DIM"  * reusing *$AZ_DO_USERNAME_INPUT* as AzDO username.\n"$PALETTE_RESET
+        echo -e $PALETTE_DIM"  * reusing *$AZ_DO_USERNAME_INPUT* as ADO username.\n"$PALETTE_RESET
     fi
 fi
 
 IFS=@ read -r username domain <<< "$AZ_DO_USERNAME_INPUT"
 if [ ! -z "$domain" ]; then
     AZ_DO_USERNAME_INPUT="$username"
-    echo -e $PALETTE_DIM"  * using *$AZ_DO_USERNAME_INPUT* as AzDO username.\n"$PALETTE_RESET
+    echo -e $PALETTE_DIM"  * using *$AZ_DO_USERNAME_INPUT* as ADO username.\n"$PALETTE_RESET
 fi
 
 if [ "$AZ_DO_USERNAME" != "$AZ_DO_USERNAME_INPUT" ]; then
@@ -135,7 +135,7 @@ fi
 
 
 
-echo -e $PALETTE_CYAN"- Thanks, *$AZ_DO_USERNAME*! Please provide your AzDO PAT\n"$PALETTE_RESET
+echo -e $PALETTE_CYAN"- Thanks, *$AZ_DO_USERNAME*! Please provide your ADO PAT\n"$PALETTE_RESET
 
 unset AZ_DO_PASSWORD_SUFFIX;
 if [ -z "$ADO_PAT" ]; then
@@ -207,14 +207,14 @@ git checkout main
 
 git branch --track github-main
 
-# clone the AzDO repo
+# clone the ADO repo
 git pull origin $GIT_DEFAULT_BRANCH_NAME:$GIT_DEFAULT_BRANCH_NAME --force --no-tags
 
 git checkout $GIT_DEFAULT_BRANCH_NAME &>/dev/null
 
 if [ "$ADO_PAT" != "$ADO_PAT_INPUT" ]; then
     export ADO_PAT=$ADO_PAT_INPUT
-    ADO_PAT_BASE64=$(echo -n $ADO_PAT | base64)
+    export ADO_PAT_BASE64=$(echo -n $ADO_PAT | base64)
     # replace env variable reference in the .npmrc
     sed -i -E "s/_password=.+$/_password=$ADO_PAT_BASE64/g" ~/.npmrc
     # write the token to the env file
@@ -324,6 +324,7 @@ $CLEAN_FEED_URL:email=npm requires email to be set but doesn't use the value\n
 \n\n"
     i=$((i+1))
   done
+fi
 
 echo -e $FEEDS_STRING >> ~/.npmrc
 

@@ -10,6 +10,18 @@
 		"ADO_REPO_URL": "",
 		// [change] relative to the ADO repo root
 		"ADO_REPO_DEFAULT_PATH": "",
+		/*
+		 * [change][optional] absolute path to NuGet.Config file - /root/workspace/{this-repo-name}/path/from/repo/root/NuGet.Config
+		 * if the env variable is not set, it will pick up the `NuGet.Config` file in the repo root, if present
+		 * if file not found with conditions above, then it will pick up the `NuGet.Config` file in the $ADO_REPO_DEFAULT_PATH, if present
+		 */
+		"NPMRC_CONFIG_FILE_PATH": "",
+		/*
+		 * [change][optional] absolute path to .npmrc file - /root/workspace/{this-repo-name}/path/from/repo/root/.npmrc
+		 * if the env variable is not set, it will pick up the `.npmrc` file in the repo root, if present
+		 * if file not found with above, then it will pick up the `.npmrc` file in the $ADO_REPO_DEFAULT_PATH, if present
+		 */
+		"NUGET_CONFIG_FILE_PATH": ""
 	},
 	/*
 	 * Please don't change! create your own `post-create-command.sh`

@@ -10,54 +10,6 @@ wget -c https://github.com/microsoft/artifacts-credprovider/releases/download/v0
 # add oh-my-bash
 wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh -O - | sh -C
 
-# connect AzDO npm feeds
-echo "
-; begin auth token
-//devdiv.pkgs.visualstudio.com/_packaging/VS/npm/registry/:username=devdiv
-//devdiv.pkgs.visualstudio.com/_packaging/VS/npm/registry/:_password=\${AZ_DO_PAT_BASE64}
-//devdiv.pkgs.visualstudio.com/_packaging/VS/npm/registry/:email=npm requires email to be set but doesn't use the value
-//devdiv.pkgs.visualstudio.com/_packaging/VS/npm/:username=devdiv
-//devdiv.pkgs.visualstudio.com/_packaging/VS/npm/:_password=\${AZ_DO_PAT_BASE64}
-//devdiv.pkgs.visualstudio.com/_packaging/VS/npm/:email=npm requires email to be set but doesn't use the value
-; end auth token
-
-; begin auth token
-//skype.pkgs.visualstudio.com/_packaging/csc/npm/registry/:username=devdiv
-//skype.pkgs.visualstudio.com/_packaging/csc/npm/registry/:_password=\${AZ_DO_PAT_BASE64}
-//skype.pkgs.visualstudio.com/_packaging/csc/npm/registry/:email=npm requires email to be set but doesn't use the value
-//skype.pkgs.visualstudio.com/_packaging/csc/npm/:username=devdiv
-//skype.pkgs.visualstudio.com/_packaging/csc/npm/:_password=\${AZ_DO_PAT_BASE64}
-//skype.pkgs.visualstudio.com/_packaging/csc/npm/:email=npm requires email to be set but doesn't use the value
-; end auth token
-
-; begin auth token
-//devdiv.pkgs.visualstudio.com/_packaging/NodeRepos/npm/registry/:username=devdiv
-//devdiv.pkgs.visualstudio.com/_packaging/NodeRepos/npm/registry/:_password=\${AZ_DO_PAT_BASE64}
-//devdiv.pkgs.visualstudio.com/_packaging/NodeRepos/npm/registry/:email=npm requires email to be set but doesn't use the value
-//devdiv.pkgs.visualstudio.com/_packaging/NodeRepos/npm/:username=devdiv
-//devdiv.pkgs.visualstudio.com/_packaging/NodeRepos/npm/:_password=\${AZ_DO_PAT_BASE64}
-//devdiv.pkgs.visualstudio.com/_packaging/NodeRepos/npm/:email=npm requires email to be set but doesn't use the value
-; end auth token
-
-; begin auth token
-//devdiv.pkgs.visualstudio.com/_packaging/Cascade/npm/registry/:username=devdiv
-//devdiv.pkgs.visualstudio.com/_packaging/Cascade/npm/registry/:_password=\${AZ_DO_PAT_BASE64}
-//devdiv.pkgs.visualstudio.com/_packaging/Cascade/npm/registry/:email=npm requires email to be set but doesn't use the value
-//devdiv.pkgs.visualstudio.com/_packaging/Cascade/npm/:username=devdiv
-//devdiv.pkgs.visualstudio.com/_packaging/Cascade/npm/:_password=\${AZ_DO_PAT_BASE64}
-//devdiv.pkgs.visualstudio.com/_packaging/Cascade/npm/:email=npm requires email to be set but doesn't use the value
-; end auth token
-
-; begin auth token
-//devdiv.pkgs.visualstudio.com/DevDiv/_packaging/playwright/npm/registry/:username=devdiv
-//devdiv.pkgs.visualstudio.com/DevDiv/_packaging/playwright/npm/registry/:_password=\${AZ_DO_PAT_BASE64}
-//devdiv.pkgs.visualstudio.com/DevDiv/_packaging/playwright/npm/registry/:email=npm requires email to be set but doesn't use the value
-//devdiv.pkgs.visualstudio.com/DevDiv/_packaging/playwright/npm/:username=devdiv
-//devdiv.pkgs.visualstudio.com/DevDiv/_packaging/playwright/npm/:_password=\${AZ_DO_PAT_BASE64}
-//devdiv.pkgs.visualstudio.com/DevDiv/_packaging/playwright/npm/:email=npm requires email to be set but doesn't use the value
-; end auth token
-" >> ~/.npmrc
-
 BASH_RC_FILE=~/.bashrc
 
 PRE_OMB_BASH_CONFIG=~/.bashrc.pre-oh-my-bash
