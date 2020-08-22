@@ -222,7 +222,7 @@ if [ "$ADO_PAT" != "$ADO_PAT_INPUT" ]; then
 fi
 
 if [ ! -d $CODESPACE_DEFAULT_PATH ]; then
-    echo -e $PALETTE_RED"\n ❗ Cannot find the \`$CODESPACE_DEFAULT_PATH\` path, failed clone the repo or the $ADO_REPO_DEFAULT_PATH not correct?\n"$PALETTE_RESET
+    echo -e $PALETTE_RED"\n ❗ Cannot find the \`$CODESPACE_DEFAULT_PATH\` path, failed clone the repo or the \$ADO_REPO_DEFAULT_PATH not correct?\n"$PALETTE_RESET
     exit 1
 fi
 
@@ -244,7 +244,8 @@ then
   NUGET_FILE_PATH=$CODESPACE_DEFAULT_PATH/NuGet.config
 fi
 
-if [ -f $NUGET_FILE_PATH ]; then
+
+if ! [ -z $NUGET_FILE_PATH ] 2> /dev/null && [ -f $NUGET_FILE_PATH ]; then
   echo -e "Generating nuget config file.."
   NAMES=$(cat $NUGET_FILE_PATH | sed -n 's/<add.*key="\([^"]*\).*/\1/p')
   names_array=($NAMES)
@@ -301,7 +302,7 @@ then
   NPMRC_FILE_PATH=$CODESPACE_DEFAULT_PATH/.npmrc
 fi
 
-if [ -f $NPMRC_FILE_PATH ]; then
+if ! [ -z $NPMRC_FILE_PATH ] 2> /dev/null && [ -f $NPMRC_FILE_PATH ]; then
   echo -e "Generating npmrc config file.. "
   FEEDS=$(cat $NPMRC_FILE_PATH | sed -n 's/.*registry=https:\([^\n]*\).*/\1/p')
   feeds_array=($FEEDS)
