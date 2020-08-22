@@ -1,3 +1,12 @@
+export NODE_VERSION=12.18.1
+# install NodeJS
+curl -sL https://deb.nodesource.com/setup_12.x -o ~/nodesource_setup.sh && bash ~/nodesource_setup.sh && apt install nodejs -y
+# install yarn
+npm i -g yarn
+
+# install Azure Credentials Provider for NuGet
+wget -c https://github.com/microsoft/artifacts-credprovider/releases/download/v0.1.22/Microsoft.NuGet.CredentialProvider.tar.gz -O - | tar -xz -C ~/.nuget
+
 # add oh-my-bash
 wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh -O - | sh -C
 
@@ -10,6 +19,15 @@ echo "
 //devdiv.pkgs.visualstudio.com/_packaging/VS/npm/:username=devdiv
 //devdiv.pkgs.visualstudio.com/_packaging/VS/npm/:_password=\${AZ_DO_PAT_BASE64}
 //devdiv.pkgs.visualstudio.com/_packaging/VS/npm/:email=npm requires email to be set but doesn't use the value
+; end auth token
+
+; begin auth token
+//skype.pkgs.visualstudio.com/_packaging/csc/npm/registry/:username=devdiv
+//skype.pkgs.visualstudio.com/_packaging/csc/npm/registry/:_password=\${AZ_DO_PAT_BASE64}
+//skype.pkgs.visualstudio.com/_packaging/csc/npm/registry/:email=npm requires email to be set but doesn't use the value
+//skype.pkgs.visualstudio.com/_packaging/csc/npm/:username=devdiv
+//skype.pkgs.visualstudio.com/_packaging/csc/npm/:_password=\${AZ_DO_PAT_BASE64}
+//skype.pkgs.visualstudio.com/_packaging/csc/npm/:email=npm requires email to be set but doesn't use the value
 ; end auth token
 
 ; begin auth token
@@ -100,17 +118,20 @@ alias cddefault='cd \$CODESPACE_DEFAULT_PATH'
 alias do='dotnet'
 alias ya='yarn'
 # misc
-alias code='f() {
-    if code-insiders -v &> /dev/null; then
+code()
+{
+  if code-insiders -v &> /dev/null; then
       code-insiders \$@;
     else
       code \$@;
-    fi
-};f'
+  fi
+}
+export -f code
 alias ls='ls --color=auto'
 alias ww='watch -n 1 \"date && echo -e \ &&\"'
 alias refresh='exec bash'
 alias bashconfig=\"code $BASH_RC_FILE\"
+alias nugetconfig=\"code ~/.nuget/NuGet/NuGet.Config\"
 alias ports='lsof -n -i -P | grep TCP'
 # git
 alias push='git push -u azdo HEAD'
