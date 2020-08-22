@@ -245,10 +245,8 @@ then
   NUGET_FILE_PATH=$CODESPACE_DEFAULT_PATH/NuGet.config
 fi
 
-
-
 if [ -f $NUGET_FILE_PATH ]; then
-  echo -e "\n\nGenerating nuget config file.. \n\n"
+  echo -e "Generating nuget config file.."
   NAMES=$(cat $NUGET_FILE_PATH | sed -n 's/<add.*key="\([^"]*\).*/\1/p')
   names_array=($NAMES)
 
@@ -284,6 +282,50 @@ if [ -f $NUGET_FILE_PATH ]; then
   </configuration>
   " > ~/.nuget/NuGet/NuGet.Config
 fi
+
+
+
+
+# get the .npmrc file path
+unset NPMRC_FILE_PATH
+# 1. check the NPMRC_CONFIG_FILE_PATH variable set by the uer first
+if ! [ -z $NPMRC_CONFIG_FILE_PATH ] 2> /dev/null && [ -f $NPMRC_CONFIG_FILE_PATH ];
+then
+    NPMRC_FILE_PATH=$NPMRC_CONFIG_FILE_PATH
+# 2. check the repo root next
+elif [ -f $CODESPACE_ROOT/.npmrc ]
+then
+    NPMRC_FILE_PATH=$CODESPACE_ROOT/.npmrc
+# 3. check the default workspace folder next
+elif [ -f $CODESPACE_DEFAULT_PATH/.npmrc ]
+then
+  NPMRC_FILE_PATH=$CODESPACE_DEFAULT_PATH/.npmrc
+fi
+
+if [ -f $NPMRC_FILE_PATH ]; then
+  echo -e "Generating npmrc config file.. "
+  FEEDS=$(cat $NPMRC_FILE_PATH | sed -n 's/.*registry=https:\([^\n]*\).*/\1/p')
+  feeds_array=($FEEDS)
+
+  i=0
+  FEEDS_STRING=""
+  for FEED_URL in "${feeds_array[@]}"
+  do
+    CLEAN_FEED_URL=${FEED_URL%"registry/"}
+    FEEDS_STRING="$FEEDS_STRING
+; begin auth token\n
+$FEED_URL:username=uname\n
+$FEED_URL:_password=$ADO_PAT_BASE64\n
+$FEED_URL:email=npm requires email to be set but doesn't use the value\n
+$CLEAN_FEED_URL:username=uname\n
+$CLEAN_FEED_URL:_password=$ADO_PAT_BASE64\n
+$CLEAN_FEED_URL:email=npm requires email to be set but doesn't use the value\n
+; end auth token\n
+\n\n"
+    i=$((i+1))
+  done
+
+echo -e $FEEDS_STRING >> ~/.npmrc
 
 
 
