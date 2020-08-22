@@ -17,8 +17,8 @@ fi
 
 source "$SCRIPT_DIR/lib/colors.sh"
 
-if [ -f ~/.cs-envirnment ]; then
-    source ~/.cs-envirnment
+if [ -f ~/.cs-environment ]; then
+    source ~/.cs-environment
 fi
 
 GREETINGS=("Bonjour" "Hello" "Salam" "Привет" "Вітаю" "Hola" "Zdravo" "Ciao" "Salut" "Hallo" "Nǐ hǎo" "Xin chào" "Yeoboseyo" "Aloha" "Namaskaram" "Wannakam" "Dzień dobry")
@@ -138,7 +138,7 @@ fi
 echo -e $PALETTE_CYAN"- Thanks, *$AZ_DO_USERNAME*! Please provide your AzDO PAT\n"$PALETTE_RESET
 
 unset AZ_DO_PASSWORD_SUFFIX;
-if [ -z "$AZ_DO_PAT" ]; then
+if [ -z "$ADO_PAT" ]; then
     AZ_DO_PASSWORD_SUFFIX=""
 else
     AZ_DO_PASSWORD_SUFFIX=$PALETTE_CYAN"(➥ to reuse old PAT)"$PALETTE_RESET
@@ -146,7 +146,7 @@ fi
 
 # reading the PAT
 unset CHARCOUNT
-unset AZ_DO_PAT_INPUT
+unset ADO_PAT_INPUT
 PROMPT=" ↳ PAT code[R/W] + packaging[R]$AZ_DO_PASSWORD_SUFFIX: "
 
 stty -echo
@@ -164,14 +164,14 @@ do
         if [ $CHARCOUNT -gt 0 ] ; then
             CHARCOUNT=$((CHARCOUNT-1))
             PROMPT=$'\b \b'
-            AZ_DO_PAT_INPUT="${PASSWORD%?}"
+            ADO_PAT_INPUT="${PASSWORD%?}"
         else
             PROMPT=''
         fi
     else
         CHARCOUNT=$((CHARCOUNT+1))
         PROMPT='*'
-        AZ_DO_PAT_INPUT+="$CHAR"
+        ADO_PAT_INPUT+="$CHAR"
     fi
 done
 
@@ -179,12 +179,12 @@ stty echo
 echo -e " "$PALETTE_RESET
 
 # check if PAT set
-if [ -z ${AZ_DO_PAT_INPUT} ]; then
-    if [ -z "$AZ_DO_PAT" ]; then
+if [ -z ${ADO_PAT_INPUT} ]; then
+    if [ -z "$ADO_PAT" ]; then
         echo -e $PALETTE_RED"\n  🐢  No PAT - Zero FLOPS per watt\n"$PALETTE_RESET
         exit 1
     else
-        AZ_DO_PAT_INPUT=$AZ_DO_PAT
+        ADO_PAT_INPUT=$ADO_PAT
         echo -e $PALETTE_DIM"\n  * reusing the old PAT."$PALETTE_RESET
     fi
 fi
@@ -196,7 +196,7 @@ git remote remove github-origin &>/dev/null
 git remote rename origin github-origin &>/dev/null
 
 #git remote remove origin
-git remote add origin https://$AZ_DO_USERNAME:$AZ_DO_PAT_INPUT@$CLEAN_ADO_ORIGIN
+git remote add origin https://$AZ_DO_USERNAME:$ADO_PAT_INPUT@$CLEAN_ADO_ORIGIN
 
 GIT_DEFAULT_BRANCH_NAME=$(git remote show origin | grep "HEAD branch\: " | sed 's/HEAD branch\: //g' | xargs)
 
@@ -212,13 +212,13 @@ git pull origin $GIT_DEFAULT_BRANCH_NAME:$GIT_DEFAULT_BRANCH_NAME --force --no-t
 
 git checkout $GIT_DEFAULT_BRANCH_NAME &>/dev/null
 
-if [ "$AZ_DO_PAT" != "$AZ_DO_PAT_INPUT" ]; then
-    export AZ_DO_PAT=$AZ_DO_PAT_INPUT
-    AZ_DO_PAT_BASE64=$(echo -n $AZ_DO_PAT | base64)
+if [ "$ADO_PAT" != "$ADO_PAT_INPUT" ]; then
+    export ADO_PAT=$ADO_PAT_INPUT
+    ADO_PAT_BASE64=$(echo -n $ADO_PAT | base64)
     # replace env variable reference in the .npmrc
-    sed -i -E "s/_password=.+$/_password=$AZ_DO_PAT_BASE64/g" ~/.npmrc
+    sed -i -E "s/_password=.+$/_password=$ADO_PAT_BASE64/g" ~/.npmrc
     # write the token to the env file
-    echo -e "export AZ_DO_PAT=$AZ_DO_PAT" >> ~/.cs-envirnment
+    echo -e "export ADO_PAT=$ADO_PAT" >> ~/.cs-environment
 fi
 
 if [ ! -d $CODESPACE_DEFAULT_PATH ]; then
@@ -226,14 +226,78 @@ if [ ! -d $CODESPACE_DEFAULT_PATH ]; then
     exit 1
 fi
 
+
+mkdir -p ~/.nuget/NuGet/
+
+# get the NuGet.Config file path
+unset NUGET_FILE_PATH
+# 1. check the NUGET_CONFIG_FILE_PATH variable set by the uer first
+if ! [ -z $NUGET_CONFIG_FILE_PATH ] 2> /dev/null && [ -f $NUGET_CONFIG_FILE_PATH ];
+then
+    NUGET_FILE_PATH=$NUGET_CONFIG_FILE_PATH
+# 2. check the repo root next
+elif [ -f $CODESPACE_ROOT/NuGet.config ]
+then
+    NUGET_FILE_PATH=$CODESPACE_ROOT/NuGet.config
+# 3. check the default workspace folder next
+elif [ -f $CODESPACE_DEFAULT_PATH/NuGet.config ]
+then
+  NUGET_FILE_PATH=$CODESPACE_DEFAULT_PATH/NuGet.config
+fi
+
+
+
+if [ -f $NUGET_FILE_PATH ]; then
+  echo -e "\n\nGenerating nuget config file.. \n\n"
+  NAMES=$(cat $NUGET_FILE_PATH | sed -n 's/<add.*key="\([^"]*\).*/\1/p')
+  names_array=($NAMES)
+
+  URLS=$(cat $NUGET_FILE_PATH | sed -n '/<add.*key="\(.*\)"/s/.*value="\(.*\)"[^\n]*/\1/p')
+  urls_array=($URLS)
+
+  FEEDS=""
+  i=0
+  for FEED_NAME in "${names_array[@]}"
+  do
+      FEED_URL=(${urls_array[$i]})
+      FEEDS="$FEEDS\n\t\t<add key=\"$FEED_NAME\" value=\"$FEED_URL\" />"
+      i=$((i+1))
+  done
+
+  CREDENTIALS=""
+  for FEED_NAME in "${names_array[@]}"
+  do
+      CREDENTIAL="<$FEED_NAME>
+      <add key=\"Username\" value=\"devdiv\" />
+      <add key=\"ClearTextPassword\" value=\"%ADO_PAT%\" />
+  </$FEED_NAME>"
+
+      CREDENTIALS="$CREDENTIALS\n$CREDENTIAL"
+  done
+
+  echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+  <configuration>
+  \t<packageSources>$FEEDS
+  \t</packageSources>
+  \t<packageSourceCredentials>$CREDENTIALS
+  \t</packageSourceCredentials>
+  </configuration>
+  " > ~/.nuget/NuGet/NuGet.Config
+fi
+
+
+
+
+
 cd $CODESPACE_DEFAULT_PATH
 
 USER_POST_CREATE_COMMAND_FILE=~/ado-in-codespaces/.devcontainer/post-create-command.sh
 if [ -f $USER_POST_CREATE_COMMAND_FILE ]; then
     echo -e $PALETTE_CYAN"\n Executing the post create command..\n"$PALETTE_RESET
 
+    source ~/.cs-environment
+
     . $USER_POST_CREATE_COMMAND_FILE
 fi
 
 exec bash
-
