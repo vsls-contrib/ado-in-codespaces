@@ -1,12 +1,3 @@
-export NODE_VERSION=12.18.1
-# install NodeJS
-curl -sL https://deb.nodesource.com/setup_12.x -o ~/nodesource_setup.sh && bash ~/nodesource_setup.sh && apt install nodejs -y
-# install yarn
-npm i -g yarn
-
-# install Azure Credentials Provider for NuGet
-wget -c https://github.com/microsoft/artifacts-credprovider/releases/download/v0.1.22/Microsoft.NuGet.CredentialProvider.tar.gz -O - | tar -xz -C ~/.nuget
-
 # add oh-my-bash
 wget https://raw.githubusercontent.com/ohmybash/oh-my-bash/master/tools/install.sh -O - | sh -C
 
@@ -110,3 +101,6 @@ then
 fi
 
 " >> $BASH_RC_FILE
+
+# install Azure Credentials Provider for NuGet
+wget -c https://github.com/microsoft/artifacts-credprovider/releases/download/v0.1.22/Microsoft.NuGet.CredentialProvider.tar.gz -O - | tar -xz -C ~/.nuget
