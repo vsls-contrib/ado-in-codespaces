@@ -12,7 +12,8 @@ Script to create GitHub Codespace out of any Azure DevOps repo.
  - feel free to define any other settings inside the file
 2. Create a Codespace and run `./init` in the terminal.
 3. Follow interactive script to specify your ADO `username` and `PAT`.
-
+4. Apply the devcontainer configuration from your repository by opening the **Command Palette** (Shift + Command + P/ Ctrl + Shift + P) and selecting **Codespaces: Rebuild Container**.
+ 
 ### Issues/Feedback
 
 - Feedback appreciated, create issues on this repo if anything 🤗
